@@ -6,9 +6,9 @@
 
 #define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m");
 #define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m");
-#define FAILED_MSG() \
+#define FAILED_MSG(msg) \
 		T_SET_COLOUR(stderr, 31); \
-		fprintf(stderr, "Failed %s:%d\n", __FILE__, __LINE__); \
+		fprintf(stderr, "Failed %s:%d: %s\n", __FILE__, __LINE__, #msg); \
 		T_RESET_COLOUR(stderr)
 #define TEST_F(name) test_names[T_COUNT] = #name; \
 					T_FLAG = 0; \
@@ -25,7 +25,7 @@
 					printf("\n")
 #define T_ASSERT(statement) \
 		if(!(statement)){ \
-			FAILED_MSG(); \
+			FAILED_MSG(#statement); \
 			T_FLAG = 1; \
 		}
 #define T_CONCLUDE() \
