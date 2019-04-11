@@ -2,17 +2,20 @@
 #include <stdio.h>
 
 int main(void){
-	TEST_F(kick){
+	TEST(kick, a(){
 		T_ASSERT(1 == 0);
-	}TEST(kick);
+		T_ASSERT_STRING("Kick", "Ness");
+	});
 
-	TEST_F(helloworld){
+	TEST(helloworld,
 		T_ASSERT(1 < 0);
-	}TEST(helloworld);
+		T_ASSERT_NUM(1, 0);
+	);
 
-	TEST_F(foo){
+	TEST(foo, 
 		T_ASSERT(1 > 0);
-	}TEST(foo);
+		T_ASSERT_STRING("Kickness", "Kickness");
+	);
 	
 	T_CONCLUDE();
 	return 0;
