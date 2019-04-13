@@ -24,8 +24,8 @@
 #define T_ASSERT(statement) \
 	if(!(statement)){ FAILED(statement); }
 
-#define T_ASSERT_STRING(a, b) \
-	if(strcmp((a), (b))){ FAILED(a != b); }
+#define T_ASSERT_STRING(a, b, s) \
+	if(strncmp((a), (b), (s))){ FAILED(a != b); }
 
 #define T_ASSERT_NUM(a, b) \
 	if((a) != (b)){ FAILED(a != b); }
