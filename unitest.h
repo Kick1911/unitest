@@ -7,13 +7,13 @@
 		T_FLAG = 1; \
 		T_SET_COLOUR(stderr, 31); \
 		fprintf(stderr, "Failed %s:%d: "#msg"\n", __FILE__, __LINE__, (a), (b)); \
-		T_RESET_COLOUR(stderr) \
+		T_RESET_COLOUR(stderr)
 
 #define PASSED(msg) \
 		T_SET_COLOUR(stdout, 32); \
 		printf("PASSED %s\n", msg); \
 		T_RESET_COLOUR(stdout); \
-		T_PASSED++ \
+		T_PASSED++
 
 /** This Macro does not work with common seperated initialising statements */
 #define TEST(name, code) NEG_FLAG = 1; MAIN_TEST(POSITIVE, name, code)
@@ -51,7 +51,8 @@
 	}
 
 #define T_CONCLUDE() \
-		printf("%d/%d PASSED\n", T_PASSED, T_COUNT);
+		printf("%d/%d PASSED\n", T_PASSED, T_COUNT); \
+		if(T_PASSED < T_COUNT) return 1;
 
 char T_FLAG, NEG_FLAG;
 int T_COUNT = 0;

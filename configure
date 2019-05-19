@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 # Only meant to set directory for install
 
 if [[ $1 =~ --prefix=(.+)$ ]];then
