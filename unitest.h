@@ -1,8 +1,8 @@
 #ifndef UNITEST
 #define UNITEST
 
-#define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m");
-#define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m");
+#define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m")
+#define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
 #define FAILED(msg, a, b) \
 		T_FLAG = 1; \
 		T_SET_COLOUR(stderr, 31); \
@@ -28,7 +28,7 @@
 					printf("\n")
 
 #define ASSERT(statement, op1, op2, format) \
-	if(statement ^ NEG_FLAG){ FAILED(format, op1, op2); }
+	if(!!(statement) ^ NEG_FLAG){ FAILED(format, op1, op2); }
 
 #define T_ASSERT(statement) \
 	ASSERT(statement, #statement, "", "%s%s")

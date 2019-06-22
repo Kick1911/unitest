@@ -35,6 +35,13 @@ int main(void){
 		T_ASSERT_NUM(b, a*a);
 	);
 
+	TEST(Pointer tests,
+		char a[] = "Kick";
+		char* b = NULL;
+		T_ASSERT(a);
+		T_ASSERT(!b);
+	);
+
 	TEST(Floating point tests,
 		T_ASSERT_FLOAT(0.5, 0.5f);
 		T_ASSERT_FLOAT((float) 22/7, (float) 22/7);
