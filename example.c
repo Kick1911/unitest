@@ -55,10 +55,13 @@ int main(void){
 	);
 
 	TEST(Pointer tests,
-		char a[] = "Kick";
+		char* a = NULL;
 		char* b = NULL;
+		a = malloc(sizeof(char) * 5);
+		strcpy(a, "Kick");
 		T_ASSERT(a);
 		T_ASSERT(!b);
+		free(a);
 	);
 
 	TEST(Floating point tests,

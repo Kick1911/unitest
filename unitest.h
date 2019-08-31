@@ -6,9 +6,15 @@
 #define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m")
 #define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
 #define FAILED(msg, a, b) \
+		char header[] = "Failed %s:%d: "; \
+		char* format = malloc(sizeof(char) * (strlen(header) + strlen(#msg) + 2)); \
 		T_FLAG = 1; \
 		T_SET_COLOUR(stderr, 31); \
-		fprintf(stderr, "Failed %s:%d: "#msg"\n", __FILE__, __LINE__, (a), (b)); \
+		strcpy(format, header); \
+		strcpy(format, #msg"\n"); \
+		format[strlen(header) + strlen(#msg) + 1] = 0; \
+		fprintf(stderr, format, __FILE__, __LINE__, (a), (b)); \
+		free(format); \
 		T_RESET_COLOUR(stderr)
 
 #define PASSED(msg) \
@@ -66,5 +72,4 @@ int T_COUNT = 0;
 int T_PASSED = 0;
 void (*T_SETUP_FUNC)(void**) = 0;
 void (*T_TEARDOWN_FUNC)(void**) = 0;
-
 #endif
