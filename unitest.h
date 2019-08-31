@@ -30,11 +30,14 @@
 #define MAIN_TEST(title, name, code) T_FLAG = 0; T_COUNT++; \
 					printf(#title" TEST: %s\n", #name); \
 					{ \
-						void** _SETUP_RESULT = (void**)malloc(sizeof(void*) * SETUP_RESULT_SIZE); \
-						if(T_SETUP_FUNC){ T_SETUP_FUNC(_SETUP_RESULT); }\
+						void** _SETUP_RESULT = NULL; \
+						if(T_SETUP_FUNC){ \
+							_SETUP_RESULT = (void**)malloc(sizeof(void*) * SETUP_RESULT_SIZE); \
+							T_SETUP_FUNC(_SETUP_RESULT); \
+						}\
 						{code;} \
 						if(T_TEARDOWN_FUNC){ T_TEARDOWN_FUNC(_SETUP_RESULT); }\
-						free(_SETUP_RESULT); \
+						if(T_SETUP_FUNC){ free(_SETUP_RESULT); } \
 					} \
 					if(!T_FLAG){ \
 						PASSED(""); \
@@ -58,7 +61,7 @@
 	}
 
 #define T_ASSERT_FLOAT(a, b) \
-	ASSERT((a) == (b), (a), (b), "%f != %f"); \
+	ASSERT((a) == (b), (a), (b), "%f != %f")
 
 #define T_CONCLUDE() \
 		printf("%d/%d PASSED\n", T_PASSED, T_COUNT); \
@@ -66,10 +69,14 @@
 
 #define T_SETUP(func) T_SETUP_FUNC = &func
 #define T_TEARDOWN(func) T_TEARDOWN_FUNC = &func
+#define T_DISABLE_SETUP() T_SETUP_FUNC = 0
+#define T_DISABLE_TEARDOWN() T_TEARDOWN_FUNC = 0
 
+typedef void (*_test_function_t)(void**);
 char T_FLAG, NEG_FLAG;
 int T_COUNT = 0;
 int T_PASSED = 0;
-void (*T_SETUP_FUNC)(void**) = 0;
-void (*T_TEARDOWN_FUNC)(void**) = 0;
+_test_function_t T_SETUP_FUNC = 0;
+_test_function_t T_TEARDOWN_FUNC = 0;
+
 #endif
