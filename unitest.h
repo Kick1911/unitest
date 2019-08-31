@@ -1,6 +1,8 @@
 #ifndef UNITEST
 #define UNITEST
 
+#define SETUP_RESULT_SIZE (10)
+
 #define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m")
 #define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
 #define FAILED(msg, a, b) \
@@ -21,7 +23,13 @@
 
 #define MAIN_TEST(title, name, code) T_FLAG = 0; T_COUNT++; \
 					printf(#title" TEST: %s\n", #name); \
-					{code;} \
+					{ \
+						void** _SETUP_RESULT = (void**)malloc(sizeof(void*) * SETUP_RESULT_SIZE); \
+						if(T_SETUP_FUNC){ T_SETUP_FUNC(_SETUP_RESULT); }\
+						{code;} \
+						if(T_TEARDOWN_FUNC){ T_TEARDOWN_FUNC(_SETUP_RESULT); }\
+						free(_SETUP_RESULT); \
+					} \
 					if(!T_FLAG){ \
 						PASSED(""); \
 					} \
@@ -44,18 +52,19 @@
 	}
 
 #define T_ASSERT_FLOAT(a, b) \
-	if(sizeof((a)) == sizeof(float)){ \
-		ASSERT((a) == (b), (a), (b), "%f != %f"); \
-	}else if(sizeof((a)) == sizeof(double)){ \
-		ASSERT((a) == (b), (a), (b), "%lf != %lf"); \
-	}
+	ASSERT((a) == (b), (a), (b), "%f != %f"); \
 
 #define T_CONCLUDE() \
 		printf("%d/%d PASSED\n", T_PASSED, T_COUNT); \
-		if(T_PASSED < T_COUNT) return 1;
+		if(T_PASSED < T_COUNT){ return 1; }
+
+#define T_SETUP(func) T_SETUP_FUNC = &func
+#define T_TEARDOWN(func) T_TEARDOWN_FUNC = &func
 
 char T_FLAG, NEG_FLAG;
 int T_COUNT = 0;
 int T_PASSED = 0;
+void (*T_SETUP_FUNC)(void**) = 0;
+void (*T_TEARDOWN_FUNC)(void**) = 0;
 
 #endif

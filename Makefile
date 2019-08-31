@@ -1,7 +1,8 @@
 include Makefile.in
+CFLAGS=-ansi -pedantic -Wall -Wno-deprecated-declarations
 
 example.test: example.c unitest.h
-	gcc -ansi example.c -o example.test -I.
+	cc $(CFLAGS) example.c -o example.test -I.
 install:
 	cp unitest.h -t $(ROOT)/include
 clean:
