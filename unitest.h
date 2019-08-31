@@ -37,7 +37,7 @@
 						}\
 						{code;} \
 						if(T_TEARDOWN_FUNC){ T_TEARDOWN_FUNC(_SETUP_RESULT); }\
-						if(T_SETUP_FUNC){ free(_SETUP_RESULT); } \
+						free(_SETUP_RESULT); \
 					} \
 					if(!T_FLAG){ \
 						PASSED(""); \
