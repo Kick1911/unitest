@@ -71,6 +71,13 @@ int main(void){
 	);
 
 	TEST(Print 'g', print("g"));
+
+	T_DISABLE_SETUP();
+	T_DISABLE_TEARDOWN();
+
+	TEST(Disable setup,
+		T_ASSERT(!_SETUP_RESULT);
+	);
 	
 	T_CONCLUDE();
 	return 0;
