@@ -6,12 +6,14 @@
 #define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m")
 #define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
 #define FAILED(msg, a, b) \
+		char* p; \
 		char header[] = "Failed %s:%d: "; \
 		char* format = malloc(sizeof(char) * (strlen(header) + strlen(#msg) + 2)); \
 		T_FLAG = 1; \
 		T_SET_COLOUR(stderr, 31); \
 		strcpy(format, header); \
-		strcpy(format, #msg"\n"); \
+		p = format + strlen(header); \
+		strcpy(p, #msg"\n"); \
 		format[strlen(header) + strlen(#msg) + 1] = 0; \
 		fprintf(stderr, format, __FILE__, __LINE__, (a), (b)); \
 		free(format); \
