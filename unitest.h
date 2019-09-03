@@ -55,6 +55,9 @@
 #define T_ASSERT_STRING(a, b) \
 	ASSERT(!strcmp((a), (b)), (a), (b), "%s != %s")
 
+#define T_ASSERT_CHAR(a, b) \
+	ASSERT((a) == (b), (a), (b), "%c != %c")
+
 #define T_ASSERT_NUM(a, b) \
 	if(sizeof((a)) <= sizeof(int)){ \
 		ASSERT((a) == (b), (a), (b), "%d != %d"); \
