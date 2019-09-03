@@ -88,6 +88,7 @@ int main(void){
 	save_stderr = stderr;
 	stderr = open_memstream(&buffer, &size);
 	T_ASSERT_NUM(1, 0);
+	T_ASSERT_CHAR('a', 'b');
 	T_ASSERT_FLOAT(0.465, 458.1375);
 	T_ASSERT_STRING("Not", "Equal");
 	T_ASSERT(5 == 9);
@@ -98,6 +99,7 @@ int main(void){
 
 	{
 		char* failed_msgs[] = {"\"1 != 0\"",
+							"\"a != b\"",
 							"\"0.465000 != 458.137500\"",
 							"\"Not != Equal\"", "5 == 9", NULL};
 		char* start = buffer,
