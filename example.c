@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <unitest.h>
 #include <stdio.h>
 #include <string.h>
@@ -19,6 +20,10 @@ void teardown(void** args){
 }
 
 int main(void){
+	FILE* save_stderr;
+	char* buffer;
+	size_t size;
+
 	N_TEST(Negative testing,
 		long int a = 1 << 31;
 		long int b = a*a;
@@ -78,7 +83,39 @@ int main(void){
 	TEST(Disable setup,
 		T_ASSERT(!_SETUP_RESULT);
 	);
-	
+
+	/** Failing Tests */
+	save_stderr = stderr;
+	stderr = open_memstream(&buffer, &size);
+	T_ASSERT_NUM(1, 0);
+	T_ASSERT_FLOAT(0.465, 458.1375);
+	T_ASSERT_STRING("Not", "Equal");
+	T_ASSERT(5 == 9);
+
+	fclose(stderr);
+	printf("%s\n", buffer);
+	stderr = save_stderr;
+
+	{
+		char* failed_msgs[] = {"\"1 != 0\"",
+							"\"0.465000 != 458.137500\"",
+							"\"Not != Equal\"", "5 == 9", NULL};
+		char* start = buffer,
+			**ptr = failed_msgs,
+			*end;
+		while(*ptr){
+			char* ts = *ptr;
+			TEST(Failed messages,
+				end = strchr(start, '\n');
+				*end = 0;
+				T_ASSERT(strstr(start, ts));
+				start = end+1;
+			);
+			ptr++;
+		}
+	}
+
+	free(buffer);
 	T_CONCLUDE();
 	return 0;
 }
