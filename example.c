@@ -108,6 +108,7 @@ int main(void){
 			*end;
 		while(*ptr){
 			char* ts = *ptr;
+			T_TEST_MSG(ts);
 			TEST(Failed messages,
 				end = strchr(start, '\n');
 				*end = 0;
