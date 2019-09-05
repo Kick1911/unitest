@@ -1,20 +1,36 @@
 #ifndef UNITEST
 #define UNITEST
 
-#define SETUP_RESULT_SIZE (10)
+#define T_SETUP_RESULT_SIZE (10)
+#define T_FAIL_MSG_STACK (255)
 
 #define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m")
 #define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
 #define FAILED(msg, a, b) \
 		char* p; \
+		char* format; \
+		char* err_msg; \
+		size_t err_msg_size; \
 		char header[] = "Failed %s:%d: "; \
-		char* format = malloc(sizeof(char) * (strlen(header) + strlen(#msg) + 2)); \
+		char seperator[] = " - "; \
+		err_msg = POP_ERR_MSG(); \
+		err_msg_size = strlen(header) + strlen(#msg) + 2; \
+		if(err_msg) err_msg_size += strlen(err_msg) + strlen(seperator); \
+		format = malloc(sizeof(char) * err_msg_size); \
 		T_FLAG = 1; \
 		T_SET_COLOUR(stderr, 31); \
 		strcpy(format, header); \
 		p = format + strlen(header); \
-		strcpy(p, #msg"\n"); \
-		format[strlen(header) + strlen(#msg) + 1] = 0; \
+		strcpy(p, #msg); \
+		p += strlen(#msg); \
+		if(err_msg){ \
+            strcpy(p, seperator); \
+            p += strlen(seperator); \
+			strcpy(p, err_msg); \
+			p += strlen(err_msg); \
+		} \
+		strcpy(p, "\n"); \
+		format[err_msg_size - 1] = 0; \
 		fprintf(stderr, format, __FILE__, __LINE__, (a), (b)); \
 		free(format); \
 		T_RESET_COLOUR(stderr)
@@ -34,7 +50,7 @@
 					{ \
 						void** _SETUP_RESULT = NULL; \
 						if(T_SETUP_FUNC){ \
-							_SETUP_RESULT = (void**)malloc(sizeof(void*) * SETUP_RESULT_SIZE); \
+							_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
 							T_SETUP_FUNC(_SETUP_RESULT); \
 						}\
 						{code;} \
@@ -72,6 +88,10 @@
 		printf("%d/%d PASSED\n", T_PASSED, T_COUNT); \
 		if(T_PASSED < T_COUNT){ return 1; }
 
+#define T_ERR_MSG(msg) *_custom_fail_msgs = msg; _custom_fail_msgs++
+#define POP_ERR_MSG() \
+		(_custom_fail_msgs - _CUSTOM_FAIL_MSGS > 0)? *--_custom_fail_msgs: NULL
+
 #define T_SETUP(func) T_SETUP_FUNC = &func
 #define T_TEARDOWN(func) T_TEARDOWN_FUNC = &func
 #define T_DISABLE_SETUP() T_SETUP_FUNC = 0
@@ -81,6 +101,8 @@ typedef void (*_test_function_t)(void**);
 char T_FLAG, NEG_FLAG;
 int T_COUNT = 0;
 int T_PASSED = 0;
+char* _CUSTOM_FAIL_MSGS[T_FAIL_MSG_STACK];
+char** _custom_fail_msgs = _CUSTOM_FAIL_MSGS;
 _test_function_t T_SETUP_FUNC = 0;
 _test_function_t T_TEARDOWN_FUNC = 0;
 

@@ -90,6 +90,7 @@ int main(void){
 	T_ASSERT_NUM(1, 0);
 	T_ASSERT_CHAR('a', 'b');
 	T_ASSERT_FLOAT(0.465, 458.1375);
+	T_ERR_MSG("Not everything is equal");
 	T_ASSERT_STRING("Not", "Equal");
 	T_ASSERT(5 == 9);
 
