@@ -3,6 +3,7 @@
 
 #define T_SETUP_RESULT_SIZE (10)
 #define T_FAIL_MSG_STACK (255)
+#define T_TEST_MSG_STACK (255)
 
 #define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;"#colour"m")
 #define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
@@ -46,9 +47,10 @@
 #define N_TEST(name, code) NEG_FLAG = 0; MAIN_TEST(NEGATIVE, name, code)
 
 #define MAIN_TEST(title, name, code) T_FLAG = 0; T_COUNT++; \
-					printf(#title" TEST: %s\n", #name); \
 					{ \
+                        char* msg = POP_TEST_MSG(); \
 						void** _SETUP_RESULT = NULL; \
+                        printf(#title" TEST: %s%s%s\n", #name, (msg)?" - ":"", (msg)?msg:""); \
 						if(T_SETUP_FUNC){ \
 							_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
 							T_SETUP_FUNC(_SETUP_RESULT); \
@@ -92,6 +94,10 @@
 #define POP_ERR_MSG() \
 		(_custom_fail_msgs - _CUSTOM_FAIL_MSGS > 0)? *--_custom_fail_msgs: NULL
 
+#define T_TEST_MSG(msg) *_custom_test_msgs = msg; _custom_test_msgs++
+#define POP_TEST_MSG() \
+		(_custom_test_msgs - _CUSTOM_TEST_MSGS > 0)? *--_custom_test_msgs: NULL
+
 #define T_SETUP(func) T_SETUP_FUNC = &func
 #define T_TEARDOWN(func) T_TEARDOWN_FUNC = &func
 #define T_DISABLE_SETUP() T_SETUP_FUNC = 0
@@ -103,6 +109,8 @@ int T_COUNT = 0;
 int T_PASSED = 0;
 char* _CUSTOM_FAIL_MSGS[T_FAIL_MSG_STACK];
 char** _custom_fail_msgs = _CUSTOM_FAIL_MSGS;
+char* _CUSTOM_TEST_MSGS[T_TEST_MSG_STACK];
+char** _custom_test_msgs = _CUSTOM_TEST_MSGS;
 _test_function_t T_SETUP_FUNC = 0;
 _test_function_t T_TEARDOWN_FUNC = 0;
 
