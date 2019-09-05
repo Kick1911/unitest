@@ -12,6 +12,7 @@ build:
   before_script:
     - apt update && apt -y install make
   script:
+    - ls
     - make
   artifacts:
     paths:
