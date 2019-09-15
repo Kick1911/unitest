@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
+#include <suite_functions.c>
 
 void print(char* a){
 	printf("%s\n", a);
@@ -52,8 +53,8 @@ int main(void){
 		T_ASSERT_NUM(b, a*a);
 	);
 
-	T_SETUP(setup);
-	T_TEARDOWN(teardown);
+	T_SETUP(&setup);
+	T_TEARDOWN(&teardown);
 
 	TEST(Setup,
 		T_ASSERT_STRING((char*)_SETUP_RESULT[0], "I am Kick");
@@ -77,8 +78,8 @@ int main(void){
 
 	TEST(Print 'g', print("g"));
 
-	T_DISABLE_SETUP();
-	T_DISABLE_TEARDOWN();
+	T_SETUP(0);
+	T_TEARDOWN(0);
 
 	TEST(Disable setup,
 		T_ASSERT(!_SETUP_RESULT);
@@ -95,6 +96,9 @@ int main(void){
 	T_ASSERT(5 == 9);
 
 	fclose(stderr);
+	#ifdef __clang__
+		free(stderr);
+	#endif
 	printf("%s\n", buffer);
 	stderr = save_stderr;
 
@@ -118,6 +122,7 @@ int main(void){
 			ptr++;
 		}
 	}
+	#include <suite.c>
 
 	free(buffer);
 	T_CONCLUDE();
