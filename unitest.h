@@ -6,12 +6,38 @@
 #define T_FAIL_COLOUR (31)
 #define T_PASS_COLOUR (32)
 
+#define _T_DO_NOTHING do {} while(0)
+
 #ifdef T_REPORTER_LIST
 #elif T_REPORTER_DOT
+    #define T_PASS_DOT_COLOUR (90)
+	#define _T_SUITE_TITLE(msg) _T_DO_NOTHING
+
+	#define _T_TEST_FAIL_MSG(msg, a, b, title) \
+		T_SET_COLOUR(stderr, T_FAIL_COLOUR); \
+		fprintf(stderr, "!"); \
+		T_RESET_COLOUR(stderr)
+
+	#define _T_TEST_PASS_MSG(title) \
+		T_SET_COLOUR(stdout, T_PASS_DOT_COLOUR); \
+		fprintf(stdout, "."); \
+		T_RESET_COLOUR(stdout)
+
+	#define _T_CONCLUDE() \
+		fprintf(stdout, "\n\n"); \
+		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
+		fprintf(stdout, "%d passing\n", T_PASSED); \
+		T_RESET_COLOUR(stdout); \
+		if(T_PASSED < T_COUNT){ \
+			T_SET_COLOUR(stdout, T_FAIL_COLOUR); \
+			fprintf(stdout, "%d failing\n", T_COUNT - T_PASSED); \
+			T_RESET_COLOUR(stdout); \
+			return 1; \
+		}
 #else
-	/* Else T_REPORTER_SPEC as default */
+	/** T_REPORTER_SPEC as default */
 	#define _T_SUITE_TITLE(msg) \
-		T_PRINTF_1(stdout, "%s\n", msg);
+		T_PRINTF_1(stdout, "%s\n", msg)
 
 	#define _T_TEST_FAIL_MSG(msg, a, b, title) \
 		char* p; \
@@ -20,7 +46,6 @@
 		char header[] = "✘ [%s] %s:%d: "; \
 		err_msg_size = strlen(header) + strlen(#msg) + 2; \
 		format = malloc(sizeof(char) * err_msg_size); \
-		T_FLAG = 1; \
 		T_SET_COLOUR(stderr, T_FAIL_COLOUR); \
 		strcpy(format, header); \
 		p = format + strlen(header); \
@@ -36,21 +61,21 @@
 		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
 		T_PRINTF(stdout, "✔"); \
 		T_RESET_COLOUR(stdout); \
-		fprintf(stdout, " %s\n", title);
+		fprintf(stdout, " %s\n", title)
 
 	#define _T_CONCLUDE() \
-        T_SET_COLOUR(stdout, T_PASS_COLOUR); \
+		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
 		if(T_PASSED < T_COUNT){ \
-            T_SET_COLOUR(stdout, T_FAIL_COLOUR); \
-            fprintf(stdout, "✘ %d/%d failed\n", T_PASSED, T_COUNT); \
-            T_RESET_COLOUR(stdout); \
+			T_SET_COLOUR(stdout, T_FAIL_COLOUR); \
+			fprintf(stdout, "✘ %d/%d failed\n", T_PASSED, T_COUNT); \
+			T_RESET_COLOUR(stdout); \
 			return 1; \
 		} \
 		fprintf(stdout, "✔ %d/%d passed\n", T_PASSED, T_COUNT); \
-		T_RESET_COLOUR(stdout);
+		T_RESET_COLOUR(stdout)
 #endif
 
-#define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[0;%dm", colour)
+#define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[1;%dm", colour)
 #define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
 
 #define _PRINTF_INDENT(stream) \
@@ -83,24 +108,26 @@
 
 #define T_SUITE(msg, code) \
 	_T_SUITE_TITLE(#msg); \
-    T_PRINT_LEVEL++;  \
+	T_PRINT_LEVEL++;  \
 	{ \
-        void** _SUITE_SETUP_RESULT = NULL; \
-        if(T_SUITE_SETUP_FUNC){ \
-            _SUITE_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
-            T_SUITE_SETUP_FUNC(_SUITE_SETUP_RESULT); \
-            T_SUITE_SETUP_FUNC = 0; \
-        } \
+		void** _SUITE_SETUP_RESULT = NULL; \
+		if(T_SUITE_SETUP_FUNC){ \
+			_SUITE_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
+			T_SUITE_SETUP_FUNC(_SUITE_SETUP_RESULT); \
+			T_SUITE_SETUP_FUNC = 0; \
+		} \
 		{code;} \
-        if(T_SUITE_TEARDOWN_FUNC){ \
+		if(T_SUITE_TEARDOWN_FUNC){ \
 			T_SUITE_TEARDOWN_FUNC(_SUITE_SETUP_RESULT); \
 			T_SUITE_TEARDOWN_FUNC = 0; \
 		} \
-        free(_SUITE_SETUP_RESULT); \
+		free(_SUITE_SETUP_RESULT); \
 	} \
-    T_PRINT_LEVEL--
+	T_PRINT_LEVEL--
 
-#define T_FAILED _T_TEST_FAIL_MSG
+#define T_FAILED(msg, a, b, title) \
+	_T_TEST_FAIL_MSG(msg, a, b, title); \
+	T_FLAG = 1;
 
 #define T_PASSED(title) \
 	_T_TEST_PASS_MSG(title); \
@@ -114,6 +141,7 @@
 	{ \
 		char _title[] = #title; \
 		void** _SETUP_RESULT = NULL; \
+        _title[0] = _title[0]; /** Making Compiler happy when var not used */ \
 		if(T_SETUP_FUNC){ \
 			_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
 			T_SETUP_FUNC(_SETUP_RESULT); \
@@ -121,10 +149,10 @@
 		{code;} \
 		if(T_TEARDOWN_FUNC){ T_TEARDOWN_FUNC(_SETUP_RESULT); } \
 		free(_SETUP_RESULT); \
-        if(!T_FLAG){ \
-            T_PASSED(_title); \
-        } \
-	} \
+		if(!T_FLAG){ \
+			T_PASSED(_title); \
+		} \
+	}
 
 #define ASSERT(statement, op1, op2, format) \
 	if(!!(statement) ^ NEG_FLAG){ T_FAILED(format, op1, op2, _title); }
