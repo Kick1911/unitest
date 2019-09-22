@@ -49,11 +49,13 @@ char* _t_strcpy(char* d, char* s){
 	#define T_GREY_COLOUR (90)
 	#define _T_SUITE_TITLE(msg) _T_DO_NOTHING
 
-	#define _T_TEST_FAIL_MSG(msg, a, b) \
+	#define _T_TEST_FAIL_MSG(msg_format, a, b) \
+		char format[] = "[%s] %s:%d: "#msg_format"\n"; \
 		T_SET_COLOUR(stderr, T_FAIL_COLOUR); \
 		fprintf(stderr, "✘"); \
 		T_SET_COLOUR(stderr, T_GREY_COLOUR); \
-		fprintf(stderr, " %s %s\n", _suite_title, _test_title); \
+		fprintf(stderr, " %s: ", _suite_title); \
+		T_FAIL_DEBUG_MSG(format, a, b); \
 		T_RESET_COLOUR(stderr)
 
 	#define _T_TEST_PASS_MSG() \
@@ -106,20 +108,11 @@ char* _t_strcpy(char* d, char* s){
 	#define _T_SUITE_TITLE(msg) \
 		T_PRINTF_1(stdout, "%s\n", msg)
 
-	#define _T_TEST_FAIL_MSG(msg, a, b) \
-		char* p; \
-		char* format; \
-		size_t err_msg_size; \
-		char header[] = "✘ [%s] %s:%d: "; \
-		err_msg_size = strlen(header) + strlen(#msg) + 2; \
-		format = malloc(sizeof(char) * err_msg_size); \
+	#define _T_TEST_FAIL_MSG(msg_format, a, b) \
+		char format[] = "✘ [%s] %s:%d: "#msg_format"\n"; \
 		T_SET_COLOUR(stderr, T_FAIL_COLOUR); \
-		p = _t_strcpy(format, header); \
-		p = _t_strcpy(p, #msg); \
-		_t_strcpy(p, "\n"); \
 		_PRINTF_INDENT(stderr); \
 		T_FAIL_DEBUG_MSG(format, a, b); \
-		free(format); \
 		T_RESET_COLOUR(stderr)
 
 	#define _T_TEST_PASS_MSG() \
