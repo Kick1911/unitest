@@ -11,13 +11,13 @@ void print(char* a){
 
 void setup(void** args){
 	/** Set args - limited to 10 args */
-	printf("SET EM' UP!!\n");
 	args[0] = "I am Kick";
+	args[1] = malloc(sizeof(char));
 }
 
 void teardown(void** args){
 	/** Free all args */
-	printf("KNOCK EM' DOWN!\n");
+	free(args[1]);
 }
 
 int main(void){
@@ -76,8 +76,6 @@ int main(void){
 		T_ASSERT_FLOAT((double) 22/7, (double) 22/7);
 	);
 
-	TEST(Print 'g', print("g"));
-
 	T_SETUP(0);
 	T_TEARDOWN(0);
 
@@ -85,9 +83,9 @@ int main(void){
 		T_ASSERT(!_SETUP_RESULT);
 	);
 
+	save_stderr = stderr;
+	stderr = open_memstream(&buffer, &size);
 	TEST(Failing tests,
-		save_stderr = stderr;
-		stderr = open_memstream(&buffer, &size);
 		T_ASSERT_NUM(1, 0);
 		T_ASSERT_CHAR('a', 'b');
 		T_ASSERT_FLOAT(0.465, 458.1375);
@@ -103,6 +101,22 @@ int main(void){
 	printf("%s\n", buffer);
 	stderr = save_stderr;
 
+	/** Formatter tests */
+    #ifdef T_REPORTER_LIST
+    #elif T_REPORTER_DOT
+		TEST(Failed messages,
+			int count = 0;
+			char* ptr = buffer;
+            ptr = strchr(ptr, '!');
+			while(ptr){
+				T_ASSERT(ptr);
+				ptr = strchr(ptr+1, '!');
+				count++;
+			}
+			T_ASSERT_NUM(count, 5);
+		);
+	#else
+	/** T_REPORTER_SPEC */
 	{
 		char* failed_msgs[] = {"\"1 != 0\"",
 							"\"a != b\"",
@@ -122,6 +136,7 @@ int main(void){
 			ptr++;
 		}
 	}
+	#endif
 	#include <suite.c>
 
 	free(buffer);
