@@ -38,11 +38,6 @@
 #define T_FAIL_COLOUR (31)
 #define T_PASS_COLOUR (32)
 
-char* _t_strcpy(char* d, char* s){
-	while((*d++ = *s++));
-	return d-1;
-}
-
 #define _T_DO_NOTHING do {} while(0)
 
 #ifdef T_REPORTER_LIST
