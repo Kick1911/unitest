@@ -83,8 +83,8 @@ int main(void){
 		T_ASSERT(!_SETUP_RESULT);
 	);
 
-    save_stderr = stderr;
-    stderr = open_memstream(&buffer, &size);
+	save_stderr = stderr;
+	stderr = open_memstream(&buffer, &size);
 	TEST(Failing tests,
 		T_ASSERT_NUM(1, 0);
 		T_ASSERT_CHAR('a', 'b');
