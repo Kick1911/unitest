@@ -57,7 +57,7 @@ int main(void){
 	T_TEARDOWN(&teardown);
 
 	TEST(Setup,
-		T_ASSERT_STRING((char*)_SETUP_RESULT[0], "I am Kick");
+		T_ASSERT_STRING((char*)T_SETUP_RESULT[0], "I am Kick");
 	);
 
 	TEST(Pointer tests,
@@ -80,7 +80,7 @@ int main(void){
 	T_TEARDOWN(0);
 
 	TEST(Disable setup,
-		T_ASSERT(!_SETUP_RESULT);
+		T_ASSERT(!T_SETUP_RESULT);
 	);
 
 	save_stderr = stderr;

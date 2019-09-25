@@ -1,16 +1,17 @@
 include Makefile.in
+REPORTERS = dot list spec
+EXE = $(REPORTERS:%=example_%.test)
 CFLAGS=$(DEBUG) -ansi -pedantic -Wall -Wno-deprecated-declarations
 
-example_dot.test: example.c unitest.h suite.c
-	$(CC) $(CFLAGS) example.c -o $@ -I. -DT_REPORTER_DOT=1
-example_list.test: example.c unitest.h suite.c
-	$(CC) $(CFLAGS) example.c -o $@ -I. -DT_REPORTER_LIST=1
-example_spec.test: example.c unitest.h suite.c
-	$(CC) $(CFLAGS) example.c -o $@ -I.
-test: example_dot.test example_spec.test example_list.test
-	valgrind ./example_spec.test \
-	&& valgrind ./example_dot.test \
-	&& valgrind ./example_list.test
+$(EXE): example.c unitest.h suite.c
+	$(eval UPPER := $(shell echo '$(@:example_%.test=%)' | tr a-z A-Z))
+	$(CC) $(CFLAGS) $< -o $@ -I. -DT_REPORTER_$(UPPER)=1
+
+test: $(EXE)
+	@for exe in $(EXE) ; do \
+		valgrind --error-exitcode=1 --leak-check=full ./$$exe ; \
+	done
+
 install:
 	cp unitest.h -t $(ROOT)/include
 clean:

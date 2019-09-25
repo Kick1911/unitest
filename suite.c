@@ -12,18 +12,18 @@ T_SUITE_SETUP(&suite_setup);
 T_SUITE_TEARDOWN(&suite_teardown);
 T_SUITE(String test,
     TEST(Character isEqual,
-        char* ptr = _SUITE_SETUP_RESULT[1];
+        char* ptr = SUITE_SETUP_RESULT[1];
         T_ASSERT_CHAR(*ptr, 'T');
     );
     TEST(String isEqual,
-        T_ASSERT_STRING((char*)_SUITE_SETUP_RESULT[0], "This is a test");
+        T_ASSERT_STRING((char*)SUITE_SETUP_RESULT[0], "This is a test");
     );
 );
 
 T_SUITE(Binary operations,
     TEST(Setup and teardown disabled,
         /* Test teardown with valgrind */
-		T_ASSERT(!_SETUP_RESULT);
+		T_ASSERT(!T_SETUP_RESULT);
     );
     TEST(OR,
         T_ASSERT_NUM(1 | 0, 1);
@@ -45,7 +45,7 @@ T_SUITE(Binary operations,
 T_SUITE(Decimal operations,
     TEST(Setup and teardown disabled,
         /* Test teardown with valgrind */
-		T_ASSERT(!_SETUP_RESULT);
+		T_ASSERT(!T_SETUP_RESULT);
     );
     TEST(Subtract,
         T_ASSERT_NUM(1 - 0, 1);
