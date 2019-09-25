@@ -34,14 +34,15 @@
 #define UNITEST
 
 #define T_SETUP_RESULT_SIZE (10)
+#define T_SUITE_SETUP_RESULT_SIZE (10)
 
 #define T_FAIL_COLOUR (31)
 #define T_PASS_COLOUR (32)
+#define T_GREY_COLOUR (90)
 
 #define _T_DO_NOTHING do {} while(0)
 
 #ifdef T_REPORTER_LIST
-	#define T_GREY_COLOUR (90)
 	#define _T_SUITE_TITLE(msg) _T_DO_NOTHING
 
 	#define _T_TEST_FAIL_MSG(msg_format, a, b) \
@@ -74,7 +75,6 @@
 		T_RESET_COLOUR(stdout)
 
 #elif T_REPORTER_DOT
-	#define T_PASS_DOT_COLOUR (90)
 	#define _T_SUITE_TITLE(msg) _T_DO_NOTHING
 
 	#define _T_TEST_FAIL_MSG(msg, a, b) \
@@ -83,7 +83,7 @@
 		T_RESET_COLOUR(stderr)
 
 	#define _T_TEST_PASS_MSG() \
-		T_SET_COLOUR(stdout, T_PASS_DOT_COLOUR); \
+		T_SET_COLOUR(stdout, T_GREY_COLOUR); \
 		fprintf(stdout, "."); \
 		T_RESET_COLOUR(stdout)
 
@@ -101,7 +101,8 @@
 #else
 	/** T_REPORTER_SPEC as default */
 	#define _T_SUITE_TITLE(msg) \
-		T_PRINTF_1(stdout, "%s\n", msg)
+		_PRINTF_INDENT(stdout); \
+		fprintf(stdout, "%s\n", msg)
 
 	#define _T_TEST_FAIL_MSG(msg_format, a, b) \
 		char format[] = "✘ [%s] %s:%d: "#msg_format"\n"; \
@@ -112,7 +113,8 @@
 
 	#define _T_TEST_PASS_MSG() \
 		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
-		T_PRINTF(stdout, "✔"); \
+		_PRINTF_INDENT(stdout); \
+		fprintf(stdout, "✔"); \
 		T_RESET_COLOUR(stdout); \
 		fprintf(stdout, " %s\n", _test_title)
 
@@ -128,86 +130,51 @@
 		T_RESET_COLOUR(stdout)
 #endif
 
-#define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[1;%dm", colour)
-#define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
-
-#define T_FAIL_DEBUG_MSG(format, a, b) \
-	fprintf(stderr, format, _test_title, __FILE__, __LINE__, (a), (b))
-
-#define _PRINTF_INDENT(stream) \
-	{ \
-		int i = T_PRINT_LEVEL; \
-		while(i--){ fprintf(stream, "   "); } \
-	}
-
-#define T_PRINTF(stream, format) \
-	_PRINTF_INDENT(stream); \
-	fprintf(stream, format)
-#define T_PRINTF_1(stream, format, n1) \
-	_PRINTF_INDENT(stream); \
-	fprintf(stream, format, n1)
-#define T_PRINTF_2(stream, format, n1, n2) \
-	_PRINTF_INDENT(stream); \
-	fprintf(stream, format, n1, n2)
-#define T_PRINTF_3(stream, format, n1, n2, n3) \
-	_PRINTF_INDENT(stream); \
-	fprintf(stream, format, n1, n2, n3)
-#define T_PRINTF_4(stream, format, n1, n2, n3, n4) \
-	_PRINTF_INDENT(stream); \
-	fprintf(stream, format, n1, n2, n3, n4)
-#define T_PRINTF_5(stream, format, n1, n2, n3, n4, n5) \
-	_PRINTF_INDENT(stream); \
-	fprintf(stream, format, n1, n2, n3, n4, n5)
-#define T_PRINTF_6(stream, format, n1, n2, n3, n4, n5, n6) \
-	_PRINTF_INDENT(stream); \
-	fprintf(stream, format, n1, n2, n3, n4, n5, n6)
-
 #define T_SUITE(title, code) \
 	_T_SUITE_TITLE(#title); \
 	T_PRINT_LEVEL++;  \
 	{ \
 		char _title[] = #title; \
-		void** _SUITE_SETUP_RESULT = NULL; \
+		void** SUITE_SETUP_RESULT = NULL; \
 		_suite_title = _title; \
 		if(T_SUITE_SETUP_FUNC){ \
-			_SUITE_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
-			T_SUITE_SETUP_FUNC(_SUITE_SETUP_RESULT); \
+			SUITE_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SUITE_SETUP_RESULT_SIZE); \
+			T_SUITE_SETUP_FUNC(SUITE_SETUP_RESULT); \
 			T_SUITE_SETUP_FUNC = 0; \
 		} \
 		{code;} \
 		if(T_SUITE_TEARDOWN_FUNC){ \
-			T_SUITE_TEARDOWN_FUNC(_SUITE_SETUP_RESULT); \
+			T_SUITE_TEARDOWN_FUNC(SUITE_SETUP_RESULT); \
 			T_SUITE_TEARDOWN_FUNC = 0; \
 		} \
 		_suite_title = NULL; /** reset suite title */ \
-		free(_SUITE_SETUP_RESULT); \
+		free(SUITE_SETUP_RESULT); \
 	} \
 	T_PRINT_LEVEL--
 
 #define T_FAILED(msg, a, b) \
 	_T_TEST_FAIL_MSG(msg, a, b); \
-	T_FLAG = 1;
+	T_FLAG = 1
 
 #define T_PASSED() \
 	_T_TEST_PASS_MSG(); \
 	T_PASSED++
 
-/** This Macro does not work with common seperated initialising statements */
 #define TEST(title, code) NEG_FLAG = 1; MAIN_TEST(title, code)
 #define N_TEST(title, code) NEG_FLAG = 0; MAIN_TEST(title, code)
 
 #define MAIN_TEST(title, code) T_FLAG = 0; T_COUNT++; \
 	{ \
 		char _title[] = #title; \
-		void** _SETUP_RESULT = NULL; \
+		void** T_SETUP_RESULT = NULL; \
         _test_title = _title; \
 		if(T_SETUP_FUNC){ \
-			_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
-			T_SETUP_FUNC(_SETUP_RESULT); \
+			T_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
+			T_SETUP_FUNC(T_SETUP_RESULT); \
 		} \
 		{code;} \
-		if(T_TEARDOWN_FUNC){ T_TEARDOWN_FUNC(_SETUP_RESULT); } \
-		free(_SETUP_RESULT); \
+		if(T_TEARDOWN_FUNC){ T_TEARDOWN_FUNC(T_SETUP_RESULT); } \
+		free(T_SETUP_RESULT); \
 		if(!T_FLAG){ \
 			T_PASSED(); \
 		} \
@@ -235,6 +202,14 @@
 
 #define T_ASSERT_FLOAT(a, b) \
 	ASSERT((a) == (b), (a), (b), "%f != %f")
+
+#define _PRINTF_INDENT(stream) \
+	{	int i = T_PRINT_LEVEL; \
+		while(i--){ fprintf(stream, "   "); } }
+#define T_SET_COLOUR(stream, colour) fprintf(stream, "\033[1;%dm", colour)
+#define T_RESET_COLOUR(stream) fprintf(stream, "\033[0m")
+#define T_FAIL_DEBUG_MSG(format, a, b) \
+	fprintf(stderr, format, _test_title, __FILE__, __LINE__, (a), (b))
 
 #define T_SETUP(func) T_SETUP_FUNC = func
 #define T_TEARDOWN(func) T_TEARDOWN_FUNC = func
