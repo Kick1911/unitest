@@ -40,15 +40,21 @@ The prototype for the teardown function follows the setup function. Adding the f
 ### Spec
 This is the default reporter.
 
-TODO: Add image
+![Spec reporter](reporter-spec.png)
+
 ### List
 To enable this reporter, compile with `-DT_REPORTER_LIST=1` argument.
 
-TODO: Add image
+**The failed tests are dummies, which is why they do not reflect in the final report.**
+
+![List reporter](reporter-list.png)
+
 ### Dot
 Looks like the python `unittest` reporter. To enable this reporter, compile with `-DT_REPORTER_DOT=1` argument.
 
-TODO: Add image
+**The failed tests are dummies, which is why they do not reflect in the final report.**
+
+![Dot reporter](reporter-dot.png)
 
 ## Test Suites
 Test suites are done as follows, but of course you may substitute the second arguments for functions if you want to.
