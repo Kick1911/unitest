@@ -1,9 +1,11 @@
 #define _GNU_SOURCE
-#include <unitest.h>
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
 #include <suite_functions.c>
+#include <unistd.h>
+#include <sys/time.h>
+#include <unitest.h>
 
 void print(char* a){
 	printf("%s\n", a);
@@ -36,6 +38,10 @@ int main(void){
 		T_ASSERT_NUM(b, 0);
 
 		T_ASSERT_STRING(n, m);
+	);
+
+	TEST(Time,
+		sleep(1);
 	);
 
 	TEST(String tests,

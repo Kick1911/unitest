@@ -42,6 +42,27 @@
 
 #define _T_DO_NOTHING do {} while(0)
 
+#ifdef _SYS_TIME_H
+	#define INIT_TIMER(t) struct timeval stop_##t_timer, start_##t_timer
+	#define START_TIMER(t) gettimeofday(&start_##t_timer, NULL);
+	#define END_TIMER(t) \
+		gettimeofday(&stop_##t_timer, NULL); \
+		T_TIME = (double)(stop_##t_timer.tv_sec - start_##t_timer.tv_sec) * 1000 \
+				- (double)(stop_##t_timer.tv_usec - start_##t_timer.tv_usec) / 1000; \
+		T_TIME = (T_TIME >= 0)? T_TIME: 0; \
+		T_TOTAL_TIME += T_TIME
+	#define STREAM_APPEND_TIME(stream, end) \
+		fprintf(stream, " (%.3fms)%s", T_TIME, end)
+	#define STREAM_APPEND_TOTAL_TIME(stream, end) \
+		fprintf(stream, " (%.3fms)%s", T_TOTAL_TIME, end)
+#else
+	#define INIT_TIMER(t) _T_DO_NOTHING
+	#define START_TIMER(t) _T_DO_NOTHING
+	#define END_TIMER(t) _T_DO_NOTHING
+	#define STREAM_APPEND_TIME(stream, end) fprintf(stream, "%s", end)
+	#define STREAM_APPEND_TOTAL_TIME(stream, end) fprintf(stream, "%s", end)
+#endif
+
 #ifdef T_REPORTER_LIST
 	#define _T_SUITE_TITLE(msg) _T_DO_NOTHING
 
@@ -58,20 +79,24 @@
 		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
 		fprintf(stdout, "✔"); \
 		T_SET_COLOUR(stdout, T_GREY_COLOUR); \
-		fprintf(stdout, " %s %s\n", _suite_title, _test_title); \
+		fprintf(stdout, " %s %s", _suite_title, _test_title); \
+		if(T_TIME >= -1){ STREAM_APPEND_TIME(stdout, "\n"); } \
 		T_RESET_COLOUR(stdout)
 
 	#define _T_CONCLUDE() \
 		if(T_PASSED < T_COUNT){ \
 			fprintf(stderr, "\n\n"); \
 			T_SET_COLOUR(stderr, T_FAIL_COLOUR); \
-			fprintf(stderr, "%d of %d tests failed\n", T_COUNT - T_PASSED, T_COUNT); \
+			fprintf(stderr, "%d of %d tests failed", \
+					T_COUNT - T_PASSED, T_COUNT); \
+			STREAM_APPEND_TOTAL_TIME(stderr, "\n"); \
 			T_RESET_COLOUR(stderr); \
 			return 1; \
 		} \
 		fprintf(stdout, "\n\n"); \
 		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
-		fprintf(stdout, "%d tests completed\n", T_PASSED); \
+		fprintf(stdout, "%d tests completed", T_PASSED); \
+		STREAM_APPEND_TOTAL_TIME(stdout, "\n"); \
 		T_RESET_COLOUR(stdout)
 
 #elif T_REPORTER_DOT
@@ -90,11 +115,13 @@
 	#define _T_CONCLUDE() \
 		fprintf(stdout, "\n\n"); \
 		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
-		fprintf(stdout, "%d passing\n", T_PASSED); \
+		fprintf(stdout, "%d passing", T_PASSED); \
+		STREAM_APPEND_TOTAL_TIME(stdout, "\n"); \
 		T_RESET_COLOUR(stdout); \
 		if(T_PASSED < T_COUNT){ \
 			T_SET_COLOUR(stderr, T_FAIL_COLOUR); \
-			fprintf(stderr, "%d failing\n", T_COUNT - T_PASSED); \
+			fprintf(stderr, "%d failing", T_COUNT - T_PASSED); \
+			STREAM_APPEND_TOTAL_TIME(stderr, "\n"); \
 			T_RESET_COLOUR(stderr); \
 			return 1; \
 		}
@@ -116,17 +143,20 @@
 		_PRINTF_INDENT(stdout); \
 		fprintf(stdout, "✔"); \
 		T_RESET_COLOUR(stdout); \
-		fprintf(stdout, " %s\n", _test_title)
+		fprintf(stdout, " %s", _test_title); \
+		if(T_TIME >= -1){ STREAM_APPEND_TIME(stdout, "\n"); }
 
 	#define _T_CONCLUDE() \
 		if(T_PASSED < T_COUNT){ \
 			T_SET_COLOUR(stderr, T_FAIL_COLOUR); \
-			fprintf(stderr, "✘ %d of %d tests failed\n", T_PASSED, T_COUNT); \
+			fprintf(stderr, "✘ %d of %d tests failed", T_PASSED, T_COUNT); \
+			STREAM_APPEND_TOTAL_TIME(stderr, "\n"); \
 			T_RESET_COLOUR(stderr); \
 			return 1; \
 		} \
 		T_SET_COLOUR(stdout, T_PASS_COLOUR); \
-		fprintf(stdout, "✔ %d tests completed\n", T_PASSED); \
+		fprintf(stdout, "✔ %d tests completed", T_PASSED); \
+		STREAM_APPEND_TOTAL_TIME(stdout, "\n"); \
 		T_RESET_COLOUR(stdout)
 #endif
 
@@ -167,12 +197,15 @@
 	{ \
 		char _title[] = #title; \
 		void** T_SETUP_RESULT = NULL; \
+		INIT_TIMER(test); \
         _test_title = _title; \
 		if(T_SETUP_FUNC){ \
 			T_SETUP_RESULT = (void**)malloc(sizeof(void*) * T_SETUP_RESULT_SIZE); \
 			T_SETUP_FUNC(T_SETUP_RESULT); \
 		} \
+		START_TIMER(test); \
 		{code;} \
+		END_TIMER(test); \
 		if(T_TEARDOWN_FUNC){ T_TEARDOWN_FUNC(T_SETUP_RESULT); } \
 		free(T_SETUP_RESULT); \
 		if(!T_FLAG){ \
@@ -220,6 +253,7 @@
 typedef void (*_test_function_t)(void**);
 char T_FLAG, NEG_FLAG, *_test_title, *_suite_title;
 int T_COUNT = 0, T_PASSED = 0, T_PRINT_LEVEL = 0;
+double T_TIME = 0, T_TOTAL_TIME = 0;
 _test_function_t T_SETUP_FUNC = 0, T_SUITE_SETUP_FUNC = 0;
 _test_function_t T_TEARDOWN_FUNC = 0, T_SUITE_TEARDOWN_FUNC = 0;
 
