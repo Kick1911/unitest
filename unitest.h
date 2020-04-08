@@ -33,6 +33,8 @@
 #ifndef UNITEST
 #define UNITEST
 
+#include <math.h>
+
 #define T_SETUP_RESULT_SIZE (10)
 #define T_SUITE_SETUP_RESULT_SIZE (10)
 
@@ -201,7 +203,9 @@
 	}
 
 #define T_ASSERT_FLOAT(a, b) \
-	ASSERT((a) == (b), (a), (b), "%f != %f")
+	ASSERT(fabs((a) - (b)) < T_EPSILON_FLOAT, (a), (b), "%f != %f")
+#define T_ASSERT_DOUBLE(a, b) \
+	ASSERT(fabs((a) - (b)) < T_EPSILON_DOUBLE, (a), (b), "%f != %f")
 
 #define _PRINTF_INDENT(stream) \
 	{	int i = T_PRINT_LEVEL; \
@@ -220,6 +224,7 @@
 typedef void (*_test_function_t)(void**);
 char T_FLAG, NEG_FLAG, *_test_title, *_suite_title;
 int T_COUNT = 0, T_PASSED = 0, T_PRINT_LEVEL = 0;
+double T_EPSILON_FLOAT = 0.000001,T_EPSILON_DOUBLE = 0.000000000000001;
 _test_function_t T_SETUP_FUNC = 0, T_SUITE_SETUP_FUNC = 0;
 _test_function_t T_TEARDOWN_FUNC = 0, T_SUITE_TEARDOWN_FUNC = 0;
 
