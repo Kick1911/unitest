@@ -70,10 +70,19 @@ int main(void){
 		free(a);
 	);
 
-	TEST(Floating point tests,
+	TEST(Float type tests,
+		float f = 3.14;
+		float* fp = &f;
 		T_ASSERT_FLOAT(0.5, 0.5f);
 		T_ASSERT_FLOAT((float) 22/7, (float) 22/7);
+		T_ASSERT_FLOAT(*fp, 3.14);
+	);
+
+	TEST(Double type tests,
+		double f = 3.14;
+		double* fp = &f;
 		T_ASSERT_FLOAT((double) 22/7, (double) 22/7);
+		T_ASSERT_FLOAT(*fp, 3.14);
 	);
 
 	T_SETUP(0);
