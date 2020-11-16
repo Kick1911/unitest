@@ -12,9 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
-      run: |
-        apt update
-        apt install valgrind
+      run: sudo apt install -y valgrind
     - name: configure
       run: ./configure --prefix=/opt
     - name: make test
