@@ -9,7 +9,9 @@ build:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
-    - apt update && apt -y install make valgrind
+    - apt update
+  script:
+    - apt -y install make valgrind
 
 # run tests using the binary built before
 test:
