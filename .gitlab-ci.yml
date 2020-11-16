@@ -10,11 +10,10 @@ build:
   # install the necessary build tools when needed
   before_script:
     - apt update && apt -y install make valgrind
-  script:
-    - ./configure --prefix=/opt
 
 # run tests using the binary built before
 test:
   stage: test
   script:
+    - ./configure --prefix=/opt
     - make test
