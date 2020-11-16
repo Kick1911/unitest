@@ -1,3 +1,5 @@
+![C/C++ CI](https://github.com/Kick1911/unitest/workflows/C/C++%20CI/badge.svg)
+
 # unitest
 
 A unit testing framework for C. Written in 100% C89 ISO preprocessor code.
