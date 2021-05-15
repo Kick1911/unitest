@@ -23,7 +23,7 @@ T_SUITE(String test,
 T_SUITE(Binary operations,
     TEST(Setup and teardown disabled,
         /* Test teardown with valgrind */
-		T_ASSERT(!T_SETUP_RESULT);
+        T_ASSERT(!T_SETUP_RESULT);
     );
     TEST(OR,
         T_ASSERT_NUM(1 | 0, 1);
@@ -45,7 +45,7 @@ T_SUITE(Binary operations,
 T_SUITE(Decimal operations,
     TEST(Setup and teardown disabled,
         /* Test teardown with valgrind */
-		T_ASSERT(!T_SETUP_RESULT);
+        T_ASSERT(!T_SETUP_RESULT);
     );
     TEST(Subtract,
         T_ASSERT_NUM(1 - 0, 1);
