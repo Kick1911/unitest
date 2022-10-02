@@ -34,6 +34,9 @@
 #define UNITEST
 
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define T_SETUP_RESULT_SIZE (10)
 #define T_SUITE_SETUP_RESULT_SIZE (10)
