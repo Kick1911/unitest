@@ -13,6 +13,7 @@ test: $(EXE)
 	done
 
 install:
+	mkdir -p $(ROOT)/include
 	cp unitest.h -t $(ROOT)/include
 clean:
 	rm -f *.test a.out
