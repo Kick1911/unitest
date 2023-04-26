@@ -166,7 +166,6 @@
     T_PASSED++
 
 #define TEST(title, code) NEG_FLAG = 1; MAIN_TEST(title, code)
-#define N_TEST(title, code) NEG_FLAG = 0; MAIN_TEST(title, code)
 
 #define MAIN_TEST(title, code) T_FLAG = 0; T_COUNT++; \
     { \
