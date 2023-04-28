@@ -10,5 +10,4 @@ test:
   before_script:
     - apt update && apt -y install make valgrind
   script:
-    - ./configure --prefix=/opt
     - make test

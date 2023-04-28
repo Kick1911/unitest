@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <malloc.h>
-#include <suite_functions.c>
+#include "suite_functions.c"
 
 void print(char* a){
     printf("%s\n", a);
@@ -26,16 +26,15 @@ int main(void){
     size_t size;
 
     TEST(Negative testing,
-        int var = 1;
-        long int a = 1 << 31;
-        long int b = a*a;
-        char n[] = "Kick";
-        char m[] = "Ness";
-
         T_ASSERT(!(1 < 0));
         /* T_ASSERT_NUM(1, 0);
+
+        long int a = 1 << 31;
+        long int b = a*a;
         T_ASSERT_NUM(b, 0);
 
+        char n[] = "Kick";
+        char m[] = "Ness";
         T_ASSERT_STRING(n, m); */
     );
 
@@ -149,7 +148,7 @@ int main(void){
         }
     }
     #endif
-    #include <suite.c>
+    #include "suite.c"
 
     free(buffer);
     T_CONCLUDE();
