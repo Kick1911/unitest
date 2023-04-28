@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-# Only meant to set directory for install
-
-if [[ $1 =~ --prefix=(.+)$ ]];then
-	echo "ROOT=${BASH_REMATCH[1]}" > Makefile.in;
-else
-	echo "Provide --prefix=DIRECTORY";
-fi
