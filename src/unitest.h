@@ -1,7 +1,7 @@
 /**
 * BSD 3-Clause License
 *
-* Copyright (c) 2019, Caswall Engelsman <caswall@kickness.org>
+* Copyright (c) 2019, Caswall Engelsman <mail@cengelsman.com>
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
