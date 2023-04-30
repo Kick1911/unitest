@@ -11,11 +11,11 @@ I have designed this library to be easy-to-use. No init function needed (though,
 You can add all your code as the second parameter of the `TEST` macro.
 ```C
 TEST(Integer tests,
-		long int a = 1 << 31;
-		long int b = a*a;
-		T_ASSERT(1 == 1);
-		T_ASSERT_NUM(1, 1);
-		T_ASSERT_NUM(b, a*a);
+        long int a = 1 << 31;
+        long int b = a*a;
+        T_ASSERT(1 == 1);
+        T_ASSERT_NUM(1, 1);
+        T_ASSERT_NUM(b, a*a);
 );
 ```
 or simply call a function in the second parameter.
